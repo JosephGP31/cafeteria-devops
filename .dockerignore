@@ -1,0 +1,11 @@
+# Ignorar el entorno virtual local (pesa ~70 MB)
+ .venv/
+
+# Ignorar archivos secretos de entorno (NUNCA dentro de la imagen)
+.env
+
+# Ignorar historial de Git y archivos temporales de Python
+.git/
+__pycache__/
+*.pyc
+ .gitignore

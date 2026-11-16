@@ -9,10 +9,11 @@ load_dotenv()
 USER = os.getenv("POSTGRES_USER")
 PASSWORD = os.getenv("POSTGRES_PASSWORD")
 DB_NAME = os.getenv("POSTGRES_DB")
+HOST = os.getenv("POSTGRES_HOST", "localhost")
 
 # 2. Construye la dirección de conexión (Connection String)
 # Formato: postgresql://usuario:contraseña@localhost:5432/nombre_bd
-DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@localhost:5432/{DB_NAME}"
+DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:5432/{DB_NAME}"
 
 # 3. Crea el motor (engine) que abre y administra la conexión con PostgreSQL
 engine = create_engine(DATABASE_URL)
