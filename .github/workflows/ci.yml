@@ -1,22 +1,51 @@
-# 1. Dale un nombre descriptivo a tu workflow (ej. CI Cafeteria Aroma)
 name: CI Cafeteria Aroma
 
-# 2. Eventos que disparan el workflow automáticamente
 on:
   push:
   pull_request:
 
 jobs:
-  verificar-entorno:
-    # 3. Define el sistema operativo del runner: ubuntu-latest
+  test:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Saludar desde el runner
-        run: echo "Iniciando pipeline de CI para Cafeteria Aroma"
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test_user
+          # 1. Escribe la contrasena falsa de pruebas: test_pass
+          POSTGRES_PASSWORD: test_pass
+          POSTGRES_DB: cafeteria_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-      - name: Inspeccionar sistema y version de Python
-        # 4. Ejecuta dos comandos de terminal: uname -a y python3 --version
+    env:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_DB: cafeteria_test
+      # 2. Como el puerto 5432 esta expuesto en la misma maquina del runner, escribe: localhost
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
         run: |
-         uname -a
-         python3 --version
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar pruebas con pytest
+        # 3. Escribe el comando: python -m pytest -v
+        run: python -m pytest -v
