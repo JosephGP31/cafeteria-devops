@@ -17,6 +17,6 @@ jobs:
 
       - name: Inspeccionar sistema y version de Python
         # 4. Ejecuta dos comandos de terminal: uname -a y python3 --version
-        run:|
+        run: |
          uname -a
          python3 --version
