@@ -1,0 +1,22 @@
+# 1. Dale un nombre descriptivo a tu workflow (ej. CI Cafeteria Aroma)
+name: CI Cafeteria Aroma
+
+# 2. Eventos que disparan el workflow automáticamente
+on:
+  push:
+  pull_request:
+
+jobs:
+  verificar-entorno:
+    # 3. Define el sistema operativo del runner: ubuntu-latest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Saludar desde el runner
+        run: echo "Iniciando pipeline de CI para Cafeteria Aroma"
+
+      - name: Inspeccionar sistema y version de Python
+        # 4. Ejecuta dos comandos de terminal: uname -a y python3 --version
+        run:|
+        uname -a
+        python3 --version
