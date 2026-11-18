@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
+from prometheus_fastapi_instrumentator import Instrumentator
 
 import models
 import schemas
@@ -10,6 +11,7 @@ from database import engine, get_db
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Cafetería Aroma API", version="0.2.0")
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/")

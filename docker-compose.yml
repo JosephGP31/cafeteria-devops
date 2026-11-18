@@ -45,8 +45,25 @@ services:
     networks:
       - cafeteria_net
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: cafeteria_prometheus
+    restart: unless-stopped
+    volumes:
+      # Monta tu configuracion en modo solo lectura (:ro)
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # Guarda el historial de metricas en un volumen persistente
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      - api
+    networks:
+      - cafeteria_net
+
 volumes:
-  postgres_data:
+  postgres_data: 
+  prometheus_data:
 
 networks:
   cafeteria_net:
