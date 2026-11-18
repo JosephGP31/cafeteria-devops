@@ -26,6 +26,6 @@ Abre http://127.0.0.1:8000 y la documentación automática en http://127.0.0.1:8
 - [x] Fase 1: entorno y API "hola mundo"
 - [x] Fase 2: base de datos (PostgreSQL) y CRUD
 - [x] Fase 3: contenedores con Docker
-- [ ] Fase 4: CI/CD con GitHub Actions
+- [x] Fase 4: CI/CD con GitHub Actions
 - [ ] Fase 5: monitoreo y respaldos
 - [ ] Fase 6: despliegue en la nube
