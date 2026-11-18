@@ -1,7 +1,8 @@
 import os
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # 1. Carga las variables secretas desde tu archivo .env
 load_dotenv()
@@ -23,6 +24,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # 5. Clase base de la que heredarán nuestras 5 tablas en el siguiente paso
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()

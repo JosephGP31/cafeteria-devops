@@ -1,6 +1,8 @@
 from decimal import Decimal
-from fastapi import FastAPI, Depends, HTTPException, status
+
+from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
+
 import models
 import schemas
 from database import engine, get_db
@@ -16,9 +18,17 @@ def leer_raiz():
 
 
 # --- CATEGORÍAS ---
-@app.post("/categorias/", response_model=schemas.CategoriaResponse, status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/categorias/",
+    response_model=schemas.CategoriaResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def crear_categoria(categoria: schemas.CategoriaCreate, db: Session = Depends(get_db)):
-    existe = db.query(models.Categoria).filter(models.Categoria.nombre == categoria.nombre).first()
+    existe = (
+        db.query(models.Categoria)
+        .filter(models.Categoria.nombre == categoria.nombre)
+        .first()
+    )
     if existe:
         raise HTTPException(status_code=400, detail="Esa categoría ya existe")
 
@@ -35,9 +45,17 @@ def listar_categorias(db: Session = Depends(get_db)):
 
 
 # --- PRODUCTOS ---
-@app.post("/productos/", response_model=schemas.ProductoResponse, status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/productos/",
+    response_model=schemas.ProductoResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def crear_producto(producto: schemas.ProductoCreate, db: Session = Depends(get_db)):
-    categoria = db.query(models.Categoria).filter(models.Categoria.id == producto.categoria_id).first()
+    categoria = (
+        db.query(models.Categoria)
+        .filter(models.Categoria.id == producto.categoria_id)
+        .first()
+    )
     if not categoria:
         raise HTTPException(status_code=404, detail="La categoría indicada no existe")
 
@@ -54,9 +72,15 @@ def listar_productos(db: Session = Depends(get_db)):
 
 
 # --- CLIENTES ---
-@app.post("/clientes/", response_model=schemas.ClienteResponse, status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/clientes/",
+    response_model=schemas.ClienteResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def crear_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(get_db)):
-    existe = db.query(models.Cliente).filter(models.Cliente.email == cliente.email).first()
+    existe = (
+        db.query(models.Cliente).filter(models.Cliente.email == cliente.email).first()
+    )
     if existe:
         raise HTTPException(status_code=400, detail="Ese correo ya está registrado")
 
@@ -73,10 +97,18 @@ def listar_clientes(db: Session = Depends(get_db)):
 
 
 # --- VENTAS ---
-@app.post("/ventas/", response_model=schemas.VentaResponse, status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/ventas/",
+    response_model=schemas.VentaResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def registrar_venta(venta: schemas.VentaCreate, db: Session = Depends(get_db)):
     if venta.cliente_id is not None:
-        cliente = db.query(models.Cliente).filter(models.Cliente.id == venta.cliente_id).first()
+        cliente = (
+            db.query(models.Cliente)
+            .filter(models.Cliente.id == venta.cliente_id)
+            .first()
+        )
         if not cliente:
             raise HTTPException(status_code=404, detail="El cliente indicado no existe")
 
@@ -87,16 +119,22 @@ def registrar_venta(venta: schemas.VentaCreate, db: Session = Depends(get_db)):
     total_venta = Decimal("0.00")
 
     for item in venta.detalles:
-        producto = db.query(models.Producto).filter(models.Producto.id == item.producto_id).first()
+        producto = (
+            db.query(models.Producto)
+            .filter(models.Producto.id == item.producto_id)
+            .first()
+        )
         if not producto:
             db.rollback()
-            raise HTTPException(status_code=404, detail=f"Producto ID {item.producto_id} no existe")
+            raise HTTPException(
+                status_code=404, detail=f"Producto ID {item.producto_id} no existe"
+            )
 
         if producto.stock < item.cantidad:
             db.rollback()
             raise HTTPException(
                 status_code=400,
-                detail=f"Stock insuficiente para '{producto.nombre}' (disponible: {producto.stock})"
+                detail=f"Stock insuficiente para '{producto.nombre}' (disponible: {producto.stock})",
             )
 
         subtotal = producto.precio * item.cantidad
@@ -122,9 +160,15 @@ def listar_ventas(db: Session = Depends(get_db)):
     return db.query(models.Venta).all()
 
 
-@app.get("/ventas/{venta_id}/detalles", response_model=list[schemas.DetalleVentaResponse])
+@app.get(
+    "/ventas/{venta_id}/detalles", response_model=list[schemas.DetalleVentaResponse]
+)
 def obtener_detalles_venta(venta_id: int, db: Session = Depends(get_db)):
     venta = db.query(models.Venta).filter(models.Venta.id == venta_id).first()
     if not venta:
         raise HTTPException(status_code=404, detail="Venta no encontrada")
-    return db.query(models.DetalleVenta).filter(models.DetalleVenta.venta_id == venta_id).all()
+    return (
+        db.query(models.DetalleVenta)
+        .filter(models.DetalleVenta.venta_id == venta_id)
+        .all()
+    )

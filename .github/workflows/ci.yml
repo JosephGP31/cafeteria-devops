@@ -5,6 +5,26 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar ruff
+        run: pip install ruff
+
+      - name: Revisar errores y estilo con ruff
+        run: |
+          # 1. Revisa errores y malas practicas con: ruff check .
+          # Completa aquí
+          # 2. Verifica el formato sin modificar archivos con: ruff format --check .
+          # Completa aquí
   test:
     runs-on: ubuntu-latest
 
