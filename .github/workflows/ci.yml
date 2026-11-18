@@ -69,3 +69,16 @@ jobs:
       - name: Ejecutar pruebas con pytest
         # 3. Escribe el comando: python -m pytest -v
         run: python -m pytest -v
+
+  build:
+    runs-on: ubuntu-latest
+    # 1. Haz que este job espere a que lint y test pasen: [lint, test]
+    needs: [lint, test]
+    steps:
+      - name: Descargar codigo del repositorio
+        # 2. Usa la accion oficial para clonar tu codigo: actions/checkout@v4
+        uses: actions/checkout@v4
+
+      - name: Construir imagen Docker de Cafeteria Aroma
+        # 3. Construye la imagen con el comando: docker build -t cafeteria-aroma:test .
+        run: docker build -t cafeteria-aroma:test .
