@@ -18,14 +18,13 @@ services:
       retries: 5
 
   api:
-    build:  .
+    build: .
     container_name: cafeteria_api
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      POSTGRES_HOST:  db
-  
+      POSTGRES_HOST: db
     depends_on:
       db:
         condition: service_healthy
@@ -50,9 +49,7 @@ services:
     container_name: cafeteria_prometheus
     restart: unless-stopped
     volumes:
-      # Monta tu configuracion en modo solo lectura (:ro)
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      # Guarda el historial de metricas en un volumen persistente
       - prometheus_data:/prometheus
     ports:
       - "127.0.0.1:9090:9090"
@@ -61,9 +58,38 @@ services:
     networks:
       - cafeteria_net
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: cafeteria_postgres_exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cafeteria_net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: cafeteria_grafana
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - cafeteria_net
+
 volumes:
-  postgres_data: 
+  postgres_data:
   prometheus_data:
+  grafana_data:
 
 networks:
   cafeteria_net:
