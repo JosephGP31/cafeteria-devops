@@ -6,3 +6,12 @@ __pycache__/
 backups/
 *.sql
 *.dump
+
+# Terraform y credenciales AWS
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+*.pem
+*.key
