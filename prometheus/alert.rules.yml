@@ -1,0 +1,11 @@
+groups:
+  - name: cafeteria_alertas
+    rules:
+      - alert: APICaida
+        expr: up{job="cafeteria-api"} == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "La API de Cafetería Aroma está caída"
+          description: "Prometheus no recibe respuesta de api:8000 desde hace más de 15 segundos."
